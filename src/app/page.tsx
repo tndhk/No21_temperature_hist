@@ -3,7 +3,7 @@ import { ETLButton } from "@/components/ETLButton";
 import { PrismaClient } from "@prisma/client";
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import { TemperatureChart } from "@/components/TemperatureChart";
+import { HomePageClient } from "./HomePageClient";
 
 const prisma = new PrismaClient();
 
@@ -11,12 +11,16 @@ export default async function Home() {
   // DBから存在するデータの年リストを取得
   const yearRecords = await prisma.temperatureHistory.findMany({
     select: { date: true },
-    distinct: ['date'], // 年取得のため仮で日付のdistinctを利用
+    distinct: ['date'],
     orderBy: { date: 'desc' },
   });
   const availableYears = [
     ...new Set(yearRecords.map((r) => r.date.getFullYear())),
   ].sort((a, b) => b - a); // 重複削除し降順ソート
+
+  const data = await prisma.temperatureHistory.findMany({
+    orderBy: { date: "desc" },
+  });
 
   return (
     <div className="container mx-auto p-4">
@@ -24,8 +28,7 @@ export default async function Home() {
         <h1 className="text-2xl font-bold">東京 気温履歴</h1>
         <ETLButton />
 
-        {/* グラフ表示 */} 
-        <TemperatureChart availableYears={availableYears} />
+        <HomePageClient initialDbData={data} availableYears={availableYears} />
       </main>
     </div>
   );
