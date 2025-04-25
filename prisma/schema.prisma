@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// 温度履歴テーブル
+model TemperatureHistory {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @unique
+  tempHigh   Float
+  tempLow    Float
+  tempAvg    Float
+  tempAvg7   Float
+  source     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([date])
+} 
