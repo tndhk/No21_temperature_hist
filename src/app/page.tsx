@@ -1,8 +1,6 @@
 import Image from "next/image";
 import { ETLButton } from "@/components/ETLButton";
 import { PrismaClient } from "@prisma/client";
-import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
 import { HomePageClient } from "./HomePageClient";
 
 const prisma = new PrismaClient();

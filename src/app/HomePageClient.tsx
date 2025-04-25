@@ -1,7 +1,6 @@
 "use client"; // グラフ表示と状態管理のためクライアントコンポーネント化
 
 import { useState } from 'react';
-import { PrismaClient } from "@prisma/client"; // 型のみインポート
 import { format } from 'date-fns';
 import { TemperatureHistory } from '@prisma/client'; // Prismaモデルの型
 

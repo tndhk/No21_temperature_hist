@@ -13,7 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -192,7 +192,7 @@ export function SingleMetricChart({
               <XAxis dataKey="date" tick={{ fontSize: 12 }}/>
               <YAxis unit="℃" tick={{ fontSize: 12 }} domain={[0, 40]} />
               <Tooltip />
-              <Legend formatter={(value, entry: any) => entry?.payload?.name ?? value}/>
+              <Legend formatter={(value) => value}/>
               {chartElements.lineElements}
             </LineChart>
           </ResponsiveContainer>
@@ -204,7 +204,7 @@ export function SingleMetricChart({
               <XAxis dataKey="date" tick={{ fontSize: 12 }}/>
               <YAxis unit="℃" tick={{ fontSize: 12 }} /> {/* 差分は自動スケール */}
               <Tooltip />
-              <Legend formatter={(value, entry: any) => entry?.payload?.name ?? value}/>
+              <Legend formatter={(value) => value}/>
               {chartElements.baseYearLineElement} {/* 基準年の線 */} 
               {chartElements.diffAreaElements}
             </AreaChart>
