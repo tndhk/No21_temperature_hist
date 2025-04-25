@@ -30,7 +30,7 @@ export function ETLButton() {
         disabled={loading}
         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {loading ? "処理中..." : "データ取得"}
+        {loading ? "処理中..." : "Update Data"}
       </button>
       {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
     </div>

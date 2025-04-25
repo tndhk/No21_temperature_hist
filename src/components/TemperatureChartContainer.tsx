@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 // --- 定数 ---
-const FALLBACK_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005];
+const FALLBACK_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015];
 
 // --- Props --- 
 interface TemperatureChartContainerProps {
@@ -39,7 +39,7 @@ export function TemperatureChartContainer({
   // --- レンダリング ---
   return (
     <div className="w-full space-y-4 border-b pb-4 mb-8">
-      <h2 className="text-xl font-semibold">表示する年を選択</h2>
+      <h2 className="text-xl font-semibold">Select Years to Display</h2>
       <div className="flex flex-wrap gap-x-6 gap-y-2">
         {availableYears.map((year) => (
           <div key={year} className="flex items-center space-x-2">
@@ -52,7 +52,7 @@ export function TemperatureChartContainer({
               htmlFor={`year-${year}`}
               className="text-sm font-medium leading-none cursor-pointer"
             >
-              {year}年
+              {year}
             </Label>
           </div>
         ))}

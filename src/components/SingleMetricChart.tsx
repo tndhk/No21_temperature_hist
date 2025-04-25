@@ -142,40 +142,40 @@ export function SingleMetricChart({
     // データがない、または選択年がない場合は何も表示しないか、メッセージを表示
     return (
         <div className="p-4 border rounded-md bg-gray-50">
-            <h3 className="text-lg font-medium mb-2">{metricLabel} (℃)</h3>
-            <p className="text-sm text-gray-500">表示する年を選択してください。</p>
+            <h3 className="text-lg font-medium mb-2">{metricLabel} (°C)</h3>
+            <p className="text-sm text-gray-500">Please select years to display data.</p>
         </div>
     );
   }
 
   return (
     <div className="p-4 border rounded-md">
-      <h3 className="text-lg font-medium mb-4">{metricLabel} (℃)</h3>
+      <h3 className="text-lg font-medium mb-4">{metricLabel} (°C)</h3>
 
       {/* --- グラフオプション --- */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
         <Tabs value={chartType} onValueChange={(value) => setChartType(value as ChartType)} className="w-full sm:w-auto">
           <TabsList>
-            <TabsTrigger value="line">折れ線比較</TabsTrigger>
-            <TabsTrigger value="diff" disabled={selectedYears.length < 2}>基準年との差 (エリア)</TabsTrigger>
+            <TabsTrigger value="line">Line Comparison</TabsTrigger>
+            <TabsTrigger value="diff" disabled={selectedYears.length < 2}>Difference from Base (Area)</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {chartType === 'diff' && (
           <div className="flex items-center gap-2">
-            <Label htmlFor={`baseYearSelect-${metricType}`} className="text-sm">基準年:</Label>
+            <Label htmlFor={`baseYearSelect-${metricType}`} className="text-sm">Base Year:</Label>
             <Select
               value={String(baseYear)}
               onValueChange={(value) => setBaseYear(Number(value))}
               disabled={selectedYears.length < 2}
             >
               <SelectTrigger id={`baseYearSelect-${metricType}`} className="w-[120px]">
-                <SelectValue placeholder="基準年" />
+                <SelectValue placeholder="Select Base" />
               </SelectTrigger>
               <SelectContent>
                 {/* 基準年は選択されている年リストから選ぶ */}
                 {selectedYears.map((year) => (
-                  <SelectItem key={year} value={String(year)}>{year}年</SelectItem>
+                  <SelectItem key={year} value={String(year)}>{year}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

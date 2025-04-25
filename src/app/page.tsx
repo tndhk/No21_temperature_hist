@@ -22,10 +22,10 @@ export default async function Home() {
   return (
     <div className="container mx-auto p-4">
       <main className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">東京 気温履歴</h1>
-        <ETLButton />
+        <h1 className="text-2xl font-bold">Temperature History Comparison in Tokyo</h1>
 
         <HomePageClient initialDbData={data} availableYears={availableYears} />
+        <ETLButton />
       </main>
     </div>
   );

@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 気温履歴可視化ツール
 
-## Getting Started
+## プロジェクト概要
+このプロジェクトは、指定された地域の過去の気温データを取得し、年ごとの気温推移を比較可能なグラフとして表示するWebアプリケーションです。Next.js, React, TypeScript を使用して構築されています。
 
-First, run the development server:
+## 技術スタック
+- フロントエンド: Next.js, React, TypeScript
+- UI: Shadcn/ui, Tailwind CSS, Radix UI, Lucide React
+- 認証: Clerk (現時点では未使用)
+- データベース: Prisma (ORM), Local SQLite (開発), Supabase (本番)
+- フォーム処理: Server Actions, Zod
+- ユーティリティ: date-fns
+- 開発ツール: Docker, ESLint, Autoprefixer, PostCSS
+- デプロイ: Vercel
+
+## セットアップ
+
+### 1. リポジトリのクローン
+```bash
+git clone [リポジトリのURL]
+cd [プロジェクトディレクトリ]
+```
+
+### 2. 依存関係のインストール
+プロジェクトルートで以下のコマンドを実行します。
+```bash
+npm install
+# または yarn install
+```
+
+### 3. 環境変数の設定
+プロジェクトルートに `.env` ファイルを作成し、`.env.example` を参考に必要な環境変数を設定してください。
+
+```env
+# .env.example の内容をコピーし、実際の値を設定してください
+# データベースURL (開発用 SQLite の場合):
+DATABASE_URL="file:./dev.db"
+
+# Supabase 接続情報 (本番用、またはローカル開発で Supabase を使う場合):
+# DATABASE_URL="postgresql://user:password@host:port/database"
+# NEXT_PUBLIC_SUPABASE_URL="YOUR_SUPABASE_URL"
+# NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
+```
+
+### 4. データベースのセットアップ
+Prisma を使用してデータベーススキーマを適用します。
+
+```bash
+npx prisma migrate dev --name init
+```
+これにより、SQLite データベースファイル (`./dev.db`) が作成され、スキーマが適用されます。
+
+## データの準備
+
+アプリケーションで表示する気温データは、CSVファイルからデータベースにインポートする必要があります。以下の手順でデータを準備します。
+
+### 1. 気温CSVファイルの生成
+`src/data/generate_temperature_csv.py` スクリプトを使用して、指定した地域の気温データを取得し、CSVファイルを生成します。
+
+必要なPythonライブラリをインストールします。
+```bash
+pip install requests pandas beautifulsoup4
+```
+
+スクリプトを実行します。
+```bash
+python src/data/generate_temperature_csv.py
+```
+成功すると、`src/data/temperature_data.csv` が生成されます。
+
+スクリプトの詳細は、ファイル内のコメントを参照してください（例: データ取得期間や地域コードの指定方法）。
+
+### 2. データをデータベースにインポート
+開発環境の SQLite (`./dev.db`) または Supabase データベースにデータをインポートします。
+
+**Supabase へのインポート:**
+Supabase UI の「Table Editor」から、`TemperatureHistory` テーブルを選択し、**「Insert」->「Import data from CSV」** オプションを使用して `src/data/temperature_data.csv` ファイルをアップロードしてください。カラムのマッピングを確認し、インポートを実行します。
+
+**ローカル SQLite へのインポート:**
+Prisma には標準のインポートツールがありません。SQLite クライアントツールを使用するか、別途インポートスクリプトを作成する必要があります。
+（例: `sqlite3 dev.db ".mode csv" ".import src/data/temperature_data.csv TemperatureHistory"` コマンド。ただし、CSVヘッダーとテーブルカラム名の厳密な一致、データ型の互換性が必要です。）
+
+## ローカルでの実行
+
+依存関係のインストール、環境変数の設定、データベースのセットアップ、およびデータインポートが完了したら、以下のコマンドで開発サーバーを起動します。
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# または yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで `http://localhost:3000` を開き、アプリケーションを確認してください。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel へのデプロイ
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Vercel は Next.js アプリケーションのデプロイに最適化されています。
 
-## Learn More
+1.  Vercel アカウントにログインし、新しいプロジェクトをインポートします。
+2.  GitHub, GitLab, または Bitbucket から本リポジトリを選択します。
+3.  プロジェクト設定で、フレームワークプリセットが「Next.js」になっていることを確認します。
+4.  **環境変数の設定:** Vercel プロジェクト設定の「Environment Variables」セクションで、`.env` ファイルに設定した以下の環境変数を追加します。
+    -   `DATABASE_URL` (Supabase の接続文字列)
+    -   `NEXT_PUBLIC_SUPABASE_URL` (もしクライアントサイドで Supabase を利用する場合)
+    -   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (もしクライアントサイドで Supabase を利用する場合)
 
-To learn more about Next.js, take a look at the following resources:
+5.  デプロイを実行します。
+Vercel はリポジトリのコミットごとに自動的にデプロイを実行するよう設定できます。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docker (開発環境)
+開発環境向けの Dockerfile と docker-compose.yml が含まれています。Docker を使用して環境を構築・実行することも可能です。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+docker-compose build
+docker-compose up
+```
 
-## Deploy on Vercel
+詳細は Dockerfile および docker-compose.yml を参照してください。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**注意:** 本番環境では、開発用 SQLite (`file:./dev.db`) ではなく、Supabase のような永続化されたデータベースサービスを使用してください。`DATABASE_URL` を適切に設定することが重要です。

@@ -18,7 +18,7 @@ interface HomePageClientProps {
 // recharts用データ整形関数
 function formatDataForChart(dbData: TemperatureHistory[]) {
   const chartData = dbData.reduce((acc, cur) => {
-    const dateStr = format(cur.date, 'MM-dd');
+    const dateStr = format(cur.date, 'MM/dd');
     const year = cur.date.getFullYear();
     const existing = acc.find(item => item.date === dateStr);
     const point = {
@@ -56,7 +56,7 @@ export function HomePageClient({ initialDbData, availableYears }: HomePageClient
         <div className="w-full space-y-8 mt-8">
           <SingleMetricChart
             metricType="avg7"
-            metricLabel="平均気温 (7日平均)"
+            metricLabel="Avg Temp (7-day Mean)"
             chartData={chartData}
             selectedYears={selectedYears}
             availableYears={availableYears}
@@ -64,7 +64,7 @@ export function HomePageClient({ initialDbData, availableYears }: HomePageClient
           />
           <SingleMetricChart
             metricType="high"
-            metricLabel="最高気温"
+            metricLabel="Max Temperature"
             chartData={chartData}
             selectedYears={selectedYears}
             availableYears={availableYears}
@@ -72,7 +72,7 @@ export function HomePageClient({ initialDbData, availableYears }: HomePageClient
           />
           <SingleMetricChart
             metricType="low"
-            metricLabel="最低気温"
+            metricLabel="Min Temperature"
             chartData={chartData}
             selectedYears={selectedYears}
             availableYears={availableYears}
