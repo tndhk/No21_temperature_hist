@@ -25,7 +25,6 @@ export default async function Home() {
         <h1 className="text-2xl font-bold">Temperature History Comparison in Tokyo</h1>
 
         <HomePageClient initialDbData={data} availableYears={availableYears} />
-        <ETLButton />
       </main>
     </div>
   );
