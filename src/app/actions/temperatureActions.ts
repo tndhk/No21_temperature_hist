@@ -1,6 +1,6 @@
 "use server";
 
-import { PrismaClient, TemperatureHistory } from '@prisma/client';
+import { PrismaClient/*, TemperatureHistory*/ } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { fetchTemperatureDataFromOpenMeteo, calculateAvg7, TemperatureDataInput } from '@/lib/openMeteoApi';
 import { startOfDay, subDays } from 'date-fns';
@@ -104,27 +104,32 @@ export async function updateTemperatureData(): Promise<UpdateResult> {
     });
     const existingDateStrings = new Set(existingDates.map(d => format(d.date, 'yyyy-MM-dd')));
 
-    // 既存の日付を除外したデータのみを抽出
-    const dataToInsertFilteredByDate = (dataForPrisma as any[]).filter(d => !existingDateStrings.has(format(d.date, 'yyyy-MM-dd')));
-
-    // さらに、必須の気温データが null のレコードを除外
-    const dataToInsert = dataToInsertFilteredByDate.filter(
-        d =>
+    // 既存の日付を除外 & null 値を除外 & 型を絞り込む
+    const dataToInsert = dataForPrisma
+        .filter(d => !existingDateStrings.has(format(d.date, 'yyyy-MM-dd'))) // 既存日付を除外
+        .filter(d => // null 値を除外
             d.tempHigh !== null &&
             d.tempLow !== null &&
             d.tempAvg !== null &&
             d.tempAvg7 !== null
-    );
+        )
+        .map(d => ({ // 型を Prisma が期待するものに合わせる (null でないことを保証)
+            date: d.date,
+            tempHigh: d.tempHigh!, // Non-null assertion
+            tempLow: d.tempLow!,   // Non-null assertion
+            tempAvg: d.tempAvg!,   // Non-null assertion
+            tempAvg7: d.tempAvg7!, // Non-null assertion
+            source: d.source,
+        }));
 
     if (dataToInsert.length === 0) {
         console.log("No new data to insert after filtering existing dates and null values.");
         return { success: true, message: 'データベースは既に最新、または取得データに必要な気温情報が含まれていませんでした。', addedCount: 0 };
     }
 
-    // skipDuplicates を削除し、フィルタリング後のデータを渡す
+    // フィルタリング後のデータを渡す
     const createResult = await prisma.temperatureHistory.createMany({
-      data: dataToInsert,
-      // skipDuplicates: true, // <- ここを削除
+      data: dataToInsert, // ここで型が合うはず
     });
 
     console.log(`Attempted to insert ${dataToInsert.length} records. Result count: ${createResult.count}.`);

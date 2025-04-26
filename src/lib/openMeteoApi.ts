@@ -1,4 +1,4 @@
-import { format, parseISO, subDays, addDays, eachDayOfInterval, isBefore } from 'date-fns';
+import { format, parseISO, subDays, /*addDays,*/ eachDayOfInterval/*, isBefore*/ } from 'date-fns';
 // Prisma の TemperatureHistoryCreateInput 型を使いたいが、lib はクライアント/サーバー両用可能性を考慮し直接はインポートしない方が良い場合もある。
 // Server Action でのみ使うならインポートしても良い。ここでは一旦 Prisma 型への依存を避ける形で定義。
 // 必要であれば TemperatureHistoryCreateInput をインポートする。
@@ -96,7 +96,6 @@ export function calculateAvg7(data: TemperatureDataInput[]): TemperatureDataInpu
     const dailyAvgMap = new Map<string, number | null>(data.map(d => [format(d.date, 'yyyy-MM-dd'), d.tempAvg]));
 
     for (const currentData of data) {
-        const currentAvg7Sum = 0;
         let validDaysCount = 0;
         let sum = 0;
 
