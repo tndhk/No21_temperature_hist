@@ -43,12 +43,17 @@ DATABASE_URL="file:./dev.db"
 ```
 
 ### 4. データベースのセットアップ
+
+#### ローカル開発環境（SQLite）
 Prisma を使用してデータベーススキーマを適用します。
 
 ```bash
 npx prisma migrate dev --name init
 ```
 これにより、SQLite データベースファイル (`./dev.db`) が作成され、スキーマが適用されます。
+
+#### Supabase（本番環境）
+Supabaseを使用する場合は、`SUPABASE_MIGRATION.md`を参照してマイグレーションを実行してください。
 
 ## データの準備
 
@@ -115,6 +120,38 @@ docker-compose up
 ```
 
 詳細は Dockerfile および docker-compose.yml を参照してください。
+
+## 最新の変更
+
+### v2.0.0 - 7日間移動平均の追加（2024年11月）
+
+全ての気温データ（平均、最高、最低）に7日間移動平均を適用し、より見やすいグラフを実現しました。
+
+#### 変更内容
+- **データベーススキーマ更新**: `tempHigh7`と`tempLow7`フィールドを追加
+- **計算ロジック改善**: 最高・最低気温の7日間移動平均を計算
+- **UI更新**: 全てのグラフで7日間移動平均を表示
+  - Avg Temp (7-day Mean)
+  - Max Temp (7-day Mean)
+  - Min Temp (7-day Mean)
+
+#### マイグレーション
+
+**Supabaseを使用している場合:**
+`SUPABASE_MIGRATION.md`を参照して、以下の手順を実行してください：
+1. Supabase SQL Editorでスキーマ変更を実行
+2. 既存データの7日移動平均を計算・更新
+3. アプリケーションを再デプロイ
+
+**ローカル開発環境:**
+依存関係をインストールした後、以下のコマンドを実行：
+```bash
+# データベーススキーマを更新
+node scripts/update-schema.js
+
+# 既存データの7日移動平均を計算
+node scripts/update-existing-data.js
+```
 
 ---
 
