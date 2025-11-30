@@ -9,7 +9,7 @@ datasource db {
 
 /// 温度履歴テーブル
 model TemperatureHistory {
-  id         Int      @id @default(autoincrement())
+  id         BigInt   @id @default(autoincrement())
   date       DateTime @unique
   tempHigh   Float
   tempLow    Float
@@ -22,4 +22,21 @@ model TemperatureHistory {
   updatedAt  DateTime @updatedAt
 
   @@index([date])
+}
+
+/// 既存のSupabaseテーブル（無視）
+model CountryArrivals {
+  id    BigInt @id @default(autoincrement())
+  // 他のフィールドは定義せず、テーブルの存在のみ認識
+  @@ignore
+}
+
+model CountryExpenditure {
+  id    BigInt @id @default(autoincrement())
+  @@ignore
+}
+
+model YearlyArrivals {
+  id    BigInt @id @default(autoincrement())
+  @@ignore
 } 

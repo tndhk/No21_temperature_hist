@@ -120,8 +120,41 @@ LIMIT 5;
 5. 必要に応じて既存データの更新SQLを実行
 6. アプリケーションをデプロイ
 
+## 重要な変更点
+
+### ビルドスクリプトの変更
+
+Supabaseを使用する場合、`prisma db push`は自動実行されません。これは、Supabaseでは手動でマイグレーションを管理するためです。
+
+`package.json`の`build`スクリプト：
+```json
+"build": "prisma generate && next build"
+```
+
+**注意**: `prisma db push`は削除されています。スキーマ変更は常にSupabase SQL Editorで手動実行してください。
+
+### Prismaスキーマの変更
+
+Supabase（PostgreSQL）に合わせて、以下の変更を行いました：
+
+1. **id型の変更**: `Int`から`BigInt`に変更
+   ```prisma
+   id  BigInt  @id @default(autoincrement())
+   ```
+
+2. **既存テーブルの保護**: Supabaseに存在する他のテーブルが削除されないよう、`@@ignore`属性で無視
+   ```prisma
+   model CountryArrivals {
+     id  BigInt @id @default(autoincrement())
+     @@ignore
+   }
+   ```
+
+これらの変更により、Vercelデプロイ時にスキーマの競合が発生しなくなります。
+
 ## 注意事項
 
 - **本番環境でのSQL実行には十分注意してください**
 - 重要なデータがある場合は、事前にバックアップを取ることをお勧めします
 - SQLの実行前に、テスト環境で動作確認することを推奨します
+- **マイグレーションはSupabase SQL Editorで手動実行し、`prisma db push`は使用しないでください**
