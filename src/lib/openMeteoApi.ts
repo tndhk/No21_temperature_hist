@@ -27,6 +27,8 @@ export interface TemperatureDataInput {
     tempLow: number | null;
     tempAvg: number | null;
     tempAvg7: number | null; // 計算が必要
+    tempHigh7: number | null; // 計算が必要
+    tempLow7: number | null; // 計算が必要
 }
 
 
@@ -73,6 +75,8 @@ export async function fetchTemperatureDataFromOpenMeteo(
         tempLow: tempLow,
         tempAvg: tempAvg,
         tempAvg7: null, // この時点ではnull。後で計算する。
+        tempHigh7: null, // この時点ではnull。後で計算する。
+        tempLow7: null, // この時点ではnull。後で計算する。
       });
     }
 
@@ -94,10 +98,16 @@ export function calculateAvg7(data: TemperatureDataInput[]): TemperatureDataInpu
 
     const dataWithAvg7: TemperatureDataInput[] = [];
     const dailyAvgMap = new Map<string, number | null>(data.map(d => [format(d.date, 'yyyy-MM-dd'), d.tempAvg]));
+    const dailyHighMap = new Map<string, number | null>(data.map(d => [format(d.date, 'yyyy-MM-dd'), d.tempHigh]));
+    const dailyLowMap = new Map<string, number | null>(data.map(d => [format(d.date, 'yyyy-MM-dd'), d.tempLow]));
 
     for (const currentData of data) {
-        let validDaysCount = 0;
-        let sum = 0;
+        let validAvgDaysCount = 0;
+        let validHighDaysCount = 0;
+        let validLowDaysCount = 0;
+        let sumAvg = 0;
+        let sumHigh = 0;
+        let sumLow = 0;
 
         // 当日を含む過去7日間を計算対象とする
         const interval = eachDayOfInterval({
@@ -107,21 +117,45 @@ export function calculateAvg7(data: TemperatureDataInput[]): TemperatureDataInpu
 
         for (const day of interval) {
             const dayStr = format(day, 'yyyy-MM-dd');
+
+            // 平均気温
             if (dailyAvgMap.has(dayStr)) {
                 const avg = dailyAvgMap.get(dayStr);
                 if (avg !== null && typeof avg === 'number') {
-                    sum += avg;
-                    validDaysCount++;
+                    sumAvg += avg;
+                    validAvgDaysCount++;
+                }
+            }
+
+            // 最高気温
+            if (dailyHighMap.has(dayStr)) {
+                const high = dailyHighMap.get(dayStr);
+                if (high !== null && typeof high === 'number') {
+                    sumHigh += high;
+                    validHighDaysCount++;
+                }
+            }
+
+            // 最低気温
+            if (dailyLowMap.has(dayStr)) {
+                const low = dailyLowMap.get(dayStr);
+                if (low !== null && typeof low === 'number') {
+                    sumLow += low;
+                    validLowDaysCount++;
                 }
             }
         }
 
-        const avg7 = validDaysCount > 0 ? sum / validDaysCount : null;
+        const avg7 = validAvgDaysCount > 0 ? sumAvg / validAvgDaysCount : null;
+        const high7 = validHighDaysCount > 0 ? sumHigh / validHighDaysCount : null;
+        const low7 = validLowDaysCount > 0 ? sumLow / validLowDaysCount : null;
 
         dataWithAvg7.push({
             ...currentData,
             // 小数点以下1桁に丸める（必要に応じて）
             tempAvg7: avg7 !== null ? parseFloat(avg7.toFixed(1)) : null,
+            tempHigh7: high7 !== null ? parseFloat(high7.toFixed(1)) : null,
+            tempLow7: low7 !== null ? parseFloat(low7.toFixed(1)) : null,
         });
     }
 

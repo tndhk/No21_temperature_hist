@@ -56,16 +56,18 @@ export async function updateTemperatureData(): Promise<UpdateResult> {
             },
         },
         orderBy: { date: 'asc' },
-        select: { date: true, tempAvg: true },
+        select: { date: true, tempAvg: true, tempHigh: true, tempLow: true },
     });
 
     const combinedDataForAvgCalc: TemperatureDataInput[] = [
         ...recentHistory.map(h => ({
             date: h.date,
             tempAvg: h.tempAvg,
-            tempHigh: null,
-            tempLow: null,
-            tempAvg7: null
+            tempHigh: h.tempHigh,
+            tempLow: h.tempLow,
+            tempAvg7: null,
+            tempHigh7: null,
+            tempLow7: null
         })),
         ...fetchedData,
     ];
@@ -87,6 +89,8 @@ export async function updateTemperatureData(): Promise<UpdateResult> {
         tempLow: d.tempLow,
         tempAvg: d.tempAvg,
         tempAvg7: d.tempAvg7,
+        tempHigh7: d.tempHigh7,
+        tempLow7: d.tempLow7,
         source: "open-meteo",
     }));
 
@@ -111,7 +115,9 @@ export async function updateTemperatureData(): Promise<UpdateResult> {
             d.tempHigh !== null &&
             d.tempLow !== null &&
             d.tempAvg !== null &&
-            d.tempAvg7 !== null
+            d.tempAvg7 !== null &&
+            d.tempHigh7 !== null &&
+            d.tempLow7 !== null
         )
         .map(d => ({ // 型を Prisma が期待するものに合わせる (null でないことを保証)
             date: d.date,
@@ -119,6 +125,8 @@ export async function updateTemperatureData(): Promise<UpdateResult> {
             tempLow: d.tempLow!,   // Non-null assertion
             tempAvg: d.tempAvg!,   // Non-null assertion
             tempAvg7: d.tempAvg7!, // Non-null assertion
+            tempHigh7: d.tempHigh7!, // Non-null assertion
+            tempLow7: d.tempLow7!, // Non-null assertion
             source: d.source,
         }));
 

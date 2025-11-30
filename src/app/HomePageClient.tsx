@@ -28,8 +28,8 @@ function formatDataForChart(dbData: TemperatureHistory[]) {
     const existing = acc.find(item => item.date === dateStr);
     const point = {
       [`${year}_avg7`]: cur.tempAvg7,
-      [`${year}_high`]: cur.tempHigh,
-      [`${year}_low`]: cur.tempLow,
+      [`${year}_high`]: cur.tempHigh7,
+      [`${year}_low`]: cur.tempLow7,
     };
     if (existing) {
       Object.assign(existing, point);
@@ -104,7 +104,7 @@ export function HomePageClient({ initialDbData, availableYears }: HomePageClient
           />
           <SingleMetricChart
             metricType="high"
-            metricLabel="Max Temperature"
+            metricLabel="Max Temp (7-day Mean)"
             chartData={chartData}
             selectedYears={selectedYears}
             availableYears={availableYears}
@@ -112,7 +112,7 @@ export function HomePageClient({ initialDbData, availableYears }: HomePageClient
           />
           <SingleMetricChart
             metricType="low"
-            metricLabel="Min Temperature"
+            metricLabel="Min Temp (7-day Mean)"
             chartData={chartData}
             selectedYears={selectedYears}
             availableYears={availableYears}
