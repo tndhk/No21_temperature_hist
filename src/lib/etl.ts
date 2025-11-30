@@ -64,6 +64,12 @@ async function fetchAndSave(startDate: Date, endDate: Date, prisma: PrismaClient
   const avg7List = compute7DayAverage(
     data.daily.temperature_2m_mean.map((v) => v ?? 0)
   );
+  const high7List = compute7DayAverage(
+    data.daily.temperature_2m_max.map((v) => v ?? 0)
+  );
+  const low7List = compute7DayAverage(
+    data.daily.temperature_2m_min.map((v) => v ?? 0)
+  );
 
   for (let i = 0; i < data.daily.time.length; i++) {
     const mean = data.daily.temperature_2m_mean[i];
@@ -83,6 +89,8 @@ async function fetchAndSave(startDate: Date, endDate: Date, prisma: PrismaClient
         tempLow: min,
         tempAvg: mean,
         tempAvg7: avg7List[i] ?? mean,
+        tempHigh7: high7List[i] ?? max,
+        tempLow7: low7List[i] ?? min,
         source: "Open-Meteo",
       },
       update: {
@@ -90,6 +98,8 @@ async function fetchAndSave(startDate: Date, endDate: Date, prisma: PrismaClient
         tempLow: min,
         tempAvg: mean,
         tempAvg7: avg7List[i] ?? mean,
+        tempHigh7: high7List[i] ?? max,
+        tempLow7: low7List[i] ?? min,
         source: "Open-Meteo",
       },
     });
